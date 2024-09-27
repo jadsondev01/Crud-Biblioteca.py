@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog, ttk
+from tkinter import messagebox, ttk
 from controllers.library_controller import LibraryController
 
 class LibraryView:
@@ -11,7 +11,7 @@ class LibraryView:
     def setup_ui(self):
         self.root.title("Sistema de Gerenciamento de Biblioteca")
         self.root.geometry("800x600")
-        
+
         # Estilo
         self.style = ttk.Style()
         self.style.theme_use('clam')
@@ -30,7 +30,7 @@ class LibraryView:
 
         self.tab_control.add(self.books_tab, text='Livros')
         self.tab_control.add(self.users_tab, text='Usuários')
-        self.tab_control.add(self.loans_tab, text='Empréstimos')  # Nome da aba de empréstimos
+        self.tab_control.add(self.loans_tab, text='Empréstimos')
 
         self.tab_control.pack(expand=1, fill='both')
 
@@ -54,24 +54,55 @@ class LibraryView:
         self.book_isbn_entry = tk.Entry(input_frame)
         self.book_isbn_entry.grid(row=2, column=1, sticky='ew')
 
-        # Botão Adicionar Livro
-        add_button = tk.Button(input_frame, text='Adicionar Livro', command=self.add_book, bg='green', fg='white')
-        add_button.grid(row=3, columnspan=2, pady=5)
+        # Botões de Ação para Adicionar Livro
+        action_frame = ttk.Frame(input_frame)
+        action_frame.grid(row=3, columnspan=2, pady=5)
+
+        add_button = tk.Button(action_frame, text='Adicionar Livro', command=self.add_book, bg='green', fg='white')
+        add_button.grid(row=0, column=0)
+
+        list_button = tk.Button(action_frame, text='Listar Livros', command=self.controller.list_books, bg='blue', fg='white')
+        list_button.grid(row=0, column=1, padx=5)
+
+        remove_button = tk.Button(action_frame, text='Remover Livro', command=self.controller.remove_book, bg='red', fg='white')
+        remove_button.grid(row=0, column=2, padx=5)
+
+        edit_button = tk.Button(action_frame, text='Editar Livro', command=self.controller.edit_book, bg='yellow', fg='black')
+        edit_button.grid(row=0, column=3, padx=5)
+
+        # Seção de Pesquisa de Livros
+        search_frame = ttk.LabelFrame(self.books_tab, text='Pesquisar Livro', padding=(10, 10))
+        search_frame.pack(padx=10, pady=10, fill='x')
+
+        ttk.Label(search_frame, text='Título:').grid(row=0, column=0, sticky='w')
+        self.search_title_entry = tk.Entry(search_frame)
+        self.search_title_entry.grid(row=0, column=1, sticky='ew')
+
+        ttk.Label(search_frame, text='Autor:').grid(row=1, column=0, sticky='w')
+        self.search_author_entry = tk.Entry(search_frame)
+        self.search_author_entry.grid(row=1, column=1, sticky='ew')
+
+        ttk.Label(search_frame, text='ISBN:').grid(row=2, column=0, sticky='w')
+        self.search_isbn_entry = tk.Entry(search_frame)
+        self.search_isbn_entry.grid(row=2, column=1, sticky='ew')
+
+        # Botões de Pesquisa
+        action_search_frame = ttk.Frame(search_frame)
+        action_search_frame.grid(row=3, columnspan=2, pady=5)
+
+        search_by_title_button = tk.Button(action_search_frame, text='Pesquisar por Título', command=self.search_book_by_title, bg='blue', fg='white')
+        search_by_title_button.grid(row=0, column=0, padx=5)
+
+        search_by_author_button = tk.Button(action_search_frame, text='Pesquisar por Autor', command=self.search_book_by_author, bg='blue', fg='white')
+        search_by_author_button.grid(row=0, column=1, padx=5)
+
+        search_by_isbn_button = tk.Button(action_search_frame, text='Pesquisar por ISBN', command=self.search_book_by_isbn, bg='blue', fg='white')
+        search_by_isbn_button.grid(row=0, column=2, padx=5)
 
         self.books_tree = ttk.Treeview(self.books_tab, columns=('ID', 'Título', 'Autor', 'ISBN'), show='headings')
         self.books_tree.pack(padx=10, pady=10, fill='both', expand=True)
         for col in self.books_tree['columns']:
             self.books_tree.heading(col, text=col)
-
-        # Botões de Ação
-        list_button = tk.Button(self.books_tab, text='Listar Livros', command=self.controller.list_books, bg='blue', fg='white')
-        list_button.pack(pady=5)
-
-        remove_button = tk.Button(self.books_tab, text='Remover Livro', command=self.controller.remove_book, bg='red', fg='white')
-        remove_button.pack(pady=5)
-
-        edit_button = tk.Button(self.books_tab, text='Editar Livro', command=self.controller.edit_book, bg='yellow', fg='black')
-        edit_button.pack(pady=5)
 
     def create_users_tab(self):
         input_frame = ttk.LabelFrame(self.users_tab, text='Adicionar Usuário', padding=(10, 10))
@@ -82,27 +113,29 @@ class LibraryView:
         self.user_name_entry.grid(row=0, column=1, sticky='ew')
 
         ttk.Label(input_frame, text='Tipo:').grid(row=1, column=0, sticky='w')
-        self.user_type_combobox = ttk.Combobox(input_frame, values=["admin", "bibliotecário", "membro"])
+        self.user_type_combobox = ttk.Combobox(input_frame, values=["admin", "librarian", "member"])
         self.user_type_combobox.grid(row=1, column=1, sticky='ew')
 
-        # Botão Adicionar Usuário
-        add_user_button = tk.Button(input_frame, text='Adicionar Usuário', command=self.add_user, bg='green', fg='white')
-        add_user_button.grid(row=2, columnspan=2, pady=5)
+        # Botões de Ação
+        action_frame = ttk.Frame(input_frame)
+        action_frame.grid(row=2, columnspan=2, pady=5)
+
+        add_user_button = tk.Button(action_frame, text='Adicionar Usuário', command=self.add_user, bg='green', fg='white')
+        add_user_button.grid(row=0, column=0)
+
+        list_user_button = tk.Button(action_frame, text='Listar Usuários', command=self.controller.list_users, bg='blue', fg='white')
+        list_user_button.grid(row=0, column=1, padx=5)
+
+        remove_user_button = tk.Button(action_frame, text='Remover Usuário', command=self.controller.remove_user, bg='red', fg='white')
+        remove_user_button.grid(row=0, column=2, padx=5)
+
+        edit_user_button = tk.Button(action_frame, text='Editar Usuário', command=self.controller.edit_user, bg='yellow', fg='black')
+        edit_user_button.grid(row=0, column=3, padx=5)
 
         self.users_tree = ttk.Treeview(self.users_tab, columns=('ID', 'Nome', 'Tipo'), show='headings')
         self.users_tree.pack(padx=10, pady=10, fill='both', expand=True)
         for col in self.users_tree['columns']:
             self.users_tree.heading(col, text=col)
-
-        # Botões de Ação
-        list_user_button = tk.Button(self.users_tab, text='Listar Usuários', command=self.controller.list_users, bg='blue', fg='white')
-        list_user_button.pack(pady=5)
-
-        remove_user_button = tk.Button(self.users_tab, text='Remover Usuário', command=self.controller.remove_user, bg='red', fg='white')
-        remove_user_button.pack(pady=5)
-
-        edit_user_button = tk.Button(self.users_tab, text='Editar Usuário', command=self.controller.edit_user, bg='yellow', fg='black')
-        edit_user_button.pack(pady=5)
 
     def create_loans_tab(self):
         input_frame = ttk.LabelFrame(self.loans_tab, text='Registrar Empréstimo', padding=(10, 10))
@@ -124,51 +157,89 @@ class LibraryView:
         self.due_date_entry = tk.Entry(input_frame)
         self.due_date_entry.grid(row=3, column=1, sticky='ew')
 
-        # Botão Registrar Empréstimo
-        register_loan_button = tk.Button(input_frame, text='Registrar Empréstimo', command=self.register_loan, bg='green', fg='white')
-        register_loan_button.grid(row=4, columnspan=2, pady=5)
+        # Botões de Ação
+        action_frame = ttk.Frame(input_frame)
+        action_frame.grid(row=4, columnspan=2, pady=5)
+
+        register_loan_button = tk.Button(action_frame, text='Registrar Empréstimo', command=self.register_loan, bg='green', fg='white')
+        register_loan_button.grid(row=0, column=0)
+
+        list_loan_button = tk.Button(action_frame, text='Listar Empréstimos', command=self.controller.list_loans, bg='blue', fg='white')
+        list_loan_button.grid(row=0, column=1, padx=5)
+
+        return_loan_button = tk.Button(action_frame, text='Registrar Devolução', command=self.controller.return_loan, bg='green', fg='white')
+        return_loan_button.grid(row=0, column=2, padx=5)
+
+        remove_loan_button = tk.Button(action_frame, text='Excluir Empréstimo', command=self.controller.remove_loan, bg='red', fg='white')
+        remove_loan_button.grid(row=0, column=3, padx=5)
 
         self.loans_tree = ttk.Treeview(self.loans_tab, columns=('ID', 'ID Livro', 'ID Usuário', 'Data do Empréstimo', 'Data de Devolução'), show='headings')
         self.loans_tree.pack(padx=10, pady=10, fill='both', expand=True)
         for col in self.loans_tree['columns']:
             self.loans_tree.heading(col, text=col)
 
-        # Botões de Ação
-        list_loan_button = tk.Button(self.loans_tab, text='Listar Empréstimos', command=self.controller.list_loans, bg='blue', fg='white')
-        list_loan_button.pack(pady=5)
-
-        return_loan_button = tk.Button(self.loans_tab, text='Registrar Devolução', command=self.controller.return_loan, bg='green', fg='white')
-        return_loan_button.pack(pady=5)
-
-        remove_loan_button = tk.Button(self.loans_tab, text='Excluir Empréstimo', command=self.controller.remove_loan, bg='red', fg='white')
-        remove_loan_button.pack(pady=5)
-
     def add_book(self):
-        title = self.book_title_entry.get()
-        author = self.book_author_entry.get()
-        isbn = self.book_isbn_entry.get()
+        title = self.book_title_entry.get().strip()
+        author = self.book_author_entry.get().strip()
+        isbn = self.book_isbn_entry.get().strip()
+
+        if not title or not author or not isbn:
+            messagebox.showerror("Erro", "Todos os campos devem ser preenchidos.")
+            return
+
         self.controller.add_book(title, author, isbn)
         self.book_title_entry.delete(0, tk.END)
         self.book_author_entry.delete(0, tk.END)
         self.book_isbn_entry.delete(0, tk.END)
 
     def add_user(self):
-        name = self.user_name_entry.get()
+        name = self.user_name_entry.get().strip()
         user_type = self.user_type_combobox.get()
+
+        if not name or not user_type:
+            messagebox.showerror("Erro", "Nome e tipo de usuário devem ser preenchidos.")
+            return
+
         self.controller.add_user(name, user_type)
         self.user_name_entry.delete(0, tk.END)
         self.user_type_combobox.set('')
 
     def register_loan(self):
-        book_id = self.loan_book_id_entry.get()
-        user_id = self.loan_user_id_entry.get()
-        loan_date = self.loan_date_entry.get()
-        due_date = self.due_date_entry.get()
+        book_id = self.loan_book_id_entry.get().strip()
+        user_id = self.loan_user_id_entry.get().strip()
+        loan_date = self.loan_date_entry.get().strip()
+        due_date = self.due_date_entry.get().strip()
+
+        if not book_id or not user_id or not loan_date or not due_date:
+            messagebox.showerror("Erro", "Todos os campos devem ser preenchidos.")
+            return
+
         self.controller.register_loan(book_id, user_id, loan_date, due_date)
         self.loan_book_id_entry.delete(0, tk.END)
         self.loan_user_id_entry.delete(0, tk.END)
         self.loan_date_entry.delete(0, tk.END)
         self.due_date_entry.delete(0, tk.END)
+
+    def search_book_by_title(self):
+        title = self.search_title_entry.get().strip()
+        if not title:
+            messagebox.showerror("Erro", "Por favor, insira um título.")
+            return
+        self.controller.search_book_by_title(title)
+
+    def search_book_by_author(self):
+        author = self.search_author_entry.get().strip()
+        if not author:
+            messagebox.showerror("Erro", "Por favor, insira um autor.")
+            return
+        self.controller.search_book_by_author(author)
+
+    def search_book_by_isbn(self):
+        isbn = self.search_isbn_entry.get().strip()
+        if not isbn:
+            messagebox.showerror("Erro", "Por favor, insira um ISBN.")
+            return
+        self.controller.search_book_by_isbn(isbn)
 
     def display_message(self, title, message):
         messagebox.showinfo(title, message)
@@ -190,3 +261,10 @@ class LibraryView:
             self.loans_tree.delete(row)
         for loan in loans:
             self.loans_tree.insert("", tk.END, values=(loan['id'], loan['book_id'], loan['user_id'], loan['loan_date'], loan['due_date']))
+
+
+# O código deve ser executado a partir deste ponto, por exemplo:
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = LibraryView(root)
+    root.mainloop()

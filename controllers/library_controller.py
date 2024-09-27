@@ -1,7 +1,7 @@
 from db.database import (
     add_book, edit_book, remove_book, list_books,
     add_user, edit_user, remove_user, list_users,
-    register_loan, return_loan, remove_loan, list_loans
+    register_loan, return_loan, remove_loan, list_loans, search_books
 )
 from tkinter import simpledialog
 
@@ -104,3 +104,29 @@ class LibraryController:
         remove_loan(loan_id)
         self.view.display_message("Info", "Empréstimo removido com sucesso!")
         self.list_loans()
+    def search_book_by_title(self, title):
+        books = search_books(title=title, author=None, isbn=None)
+        if books:
+            self.view.update_books_tree(books)
+            self.view.display_message("Info", f"{len(books)} livro(s) encontrado(s) por título.")
+        else:
+            self.view.display_message("Info", "Nenhum livro encontrado por título.")
+
+    def search_book_by_author(self, author):
+        books = search_books(title=None, author=author, isbn=None)
+        if books:
+            self.view.update_books_tree(books)
+            self.view.display_message("Info", f"{len(books)} livro(s) encontrado(s) por autor.")
+        else:
+            self.view.display_message("Info", "Nenhum livro encontrado por autor.")
+
+    def search_book_by_isbn(self, isbn):
+        books = search_books(title=None, author=None, isbn=isbn)
+        if books:
+            self.view.update_books_tree(books)
+            self.view.display_message("Info", f"{len(books)} livro(s) encontrado(s) por ISBN.")
+        else:
+            self.view.display_message("Info", "Nenhum livro encontrado por ISBN.")
+   
+
+    

@@ -137,6 +137,12 @@ def list_books():
 def add_user(name, user_type):
     db = Database()
     cursor = db.cursor
+    valid_types = ['admin', 'librarian', 'member']
+    
+    if user_type not in valid_types:
+        print(f"Erro: Tipo de usuário '{user_type}' inválido. Deve ser um dos: {valid_types}.")
+        return
+    
     try:
         cursor.execute(''' 
             INSERT INTO users (name, user_type)
@@ -158,6 +164,10 @@ def edit_user(user_id, new_name=None, new_user_type=None):
         params.append(new_name)
     
     if new_user_type:
+        valid_types = ['admin', 'librarian', 'member']
+        if new_user_type not in valid_types:
+            print(f"Erro: Tipo de usuário '{new_user_type}' inválido. Deve ser um dos: {valid_types}.")
+            return
         updates.append("user_type = ?")
         params.append(new_user_type)
     
